@@ -1,6 +1,8 @@
 package model;
 
-public class Person {
+import java.time.LocalDate;
+
+public class Person{
 
 	public final static char MALE = 'M';
 	public final static char FEMALE = 'F';
@@ -8,11 +10,11 @@ public class Person {
 	private String name, lastName;
 	private long code;
 	private char sex;
-	private String birthDate;
+	private LocalDate birthDate;
 	private double height;
 	private String nationality;
 
-	public Person(String name, String lastName, long code, char sex, String birthDate, double height,
+	public Person(String name, String lastName, long code, char sex, LocalDate birthDate, double height,
 			String nationality) {
 		this.name = name;
 		this.lastName = lastName;
@@ -55,11 +57,11 @@ public class Person {
 		this.sex = sex;
 	}
 
-	public String getBirthDate() {
+	public LocalDate getBirthDate() {
 		return birthDate;
 	}
 
-	public void setBirthDate(String birthDate) {
+	public void setBirthDate(LocalDate birthDate) {
 		this.birthDate = birthDate;
 	}
 
@@ -77,6 +79,15 @@ public class Person {
 
 	public void setNationality(String nationality) {
 		this.nationality = nationality;
+	}
+	
+	public boolean equals(Person other) {
+		boolean result = name.equals(other.getName()) && lastName.equals(other.getLastName())&&
+				code== other.getCode() && sex == other.getSex() &&
+				birthDate.equals(other.getBirthDate()) && height == other.getHeight()&&
+				nationality.equals(other.getNationality());
+		
+		return result;
 	}
 
 }

@@ -8,10 +8,21 @@ import java.io.IOException;
 import BST.BSTAvl;
 
 public class Database {
+	
+	public static final String PICTURE_LINK = "https://thispersondoesnotexist.com/image";
+
+	public static final String GEN_PATH = "data/generation_data/";
+	
+	public static final int MAX_PEOPLECAP = 10000000;
+	
+	
+	
+
 
 	public final static String PATH_PERSON = "./data/personGenerator.txt";
 
 	private BSTAvl<Person, Integer> dataBase;
+	
 
 	public Database() {
 		dataBase = new BSTAvl<Person, Integer>();

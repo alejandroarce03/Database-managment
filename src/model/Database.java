@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.time.LocalDate;
 
 import BST.BSTAvl;
 
@@ -21,13 +22,19 @@ public class Database {
 
 	public final static String PATH_PERSON = "./data/personGenerator.txt";
 
-	private BSTAvl<Person, Integer> dataBase;
+	private BSTAvl<Person, String> nameDataBase;
+	private BSTAvl<Person, Long> codeDataBase;
+	private BSTAvl<Person, String> lastNameDataBase;
+	
 	
 
 	public Database() {
-		dataBase = new BSTAvl<Person, Integer>();
+		nameDataBase = new BSTAvl<Person, String>();
+		codeDateBase = new BTSAvl<Person, Long>();
+		
+		
 	}
-
+/*
 	public void generateDataBase() {
 		FileReader x;
 		try {
@@ -49,6 +56,14 @@ public class Database {
 			e.printStackTrace();
 		}
 
+	}
+	*/
+	
+	public Person addPerson(String name, String lastName, long code, char sex, LocalDate birthDate, double height,
+			String nationality) {
+		Person p = new Person(name, lastName,code,sex,birthDate,height,nationality);
+		nameDataBase.add(p, name);
+		return p;
 	}
 
 	public BSTAvl<Person, Integer> getDataBase() {

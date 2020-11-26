@@ -14,7 +14,7 @@ public class Database {
 
 	public static final String GEN_PATH = "data/generation_data/";
 	
-	public static final int MAX_PEOPLECAP = 10000000;
+	public static final int MAX_PEOPLECAP = 1000000000;
 	
 	
 	
@@ -30,7 +30,8 @@ public class Database {
 
 	public Database() {
 		nameDataBase = new BSTAvl<Person, String>();
-		codeDateBase = new BTSAvl<Person, Long>();
+		codeDataBase = new BSTAvl<Person, Long>();
+		lastNameDataBase = new BSTAvl<Person, String>();
 		
 		
 	}
@@ -63,10 +64,10 @@ public class Database {
 			String nationality) {
 		Person p = new Person(name, lastName,code,sex,birthDate,height,nationality);
 		nameDataBase.add(p, name);
+		lastNameDataBase.add(p, lastName);
+		codeDataBase.add(p, code);
 		return p;
 	}
 
-	public BSTAvl<Person, Integer> getDataBase() {
-		return dataBase;
-	}
+
 }

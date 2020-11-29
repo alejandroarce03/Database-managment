@@ -2,7 +2,7 @@ package BST;
 
 import java.util.ArrayList;
 
-public class BSTAvl<E, K extends Comparable<? super K>> extends BST<E, K> {
+public class BSTAvl<E, K extends Comparable<? super K>> extends BST<E, K> implements iBSTAVL<E,K>  {
 
 	private Node<E, K> root;
 	private ArrayList<E> toArraylist;
@@ -10,51 +10,50 @@ public class BSTAvl<E, K extends Comparable<? super K>> extends BST<E, K> {
 	public BSTAvl() {
 		root = null;
 	}
-
-	@Override
-	public void add(E element, K key) {
-		root = add(root, element, key);
-
+	public BSTAvl(Node<E, K> current) {
+		root = current;
 	}
 
-	private Node<E, K> add(Node<E, K> current, E element, K key) {
+	public BSTAvl(E element, K key) {
+		root = new Node<E, K>(element, key);
+	}
+
+	@Override
+	public void add(E element, K key) {	
+			root= addNodeRecursive(root,element,key);
+	}
+
+	private Node<E, K> addNodeRecursive(Node<E, K> current, E element, K key) {
 		if (current == null) {
 			return new Node<E, K>(element, key);
 		}
 
-		else if (key.compareTo(current.getKey()) < 0) {
-			current.setLeft(add(current.getNodeLeft(), element, key));
+		if (key.compareTo(current.getKey()) < 0) {
+			current.setLeft(addNodeRecursive(current.getNodeLeft(), element, key));
 		}
 
 		else {
-			current.setRight(add(current.getNodeRight(), element, key));
+			current.setRight(addNodeRecursive(current.getNodeRight(), element, key));
 		}
-
-		if (checkAVLBalance(current) == 0) {
-			return current;
+	
+		current.setHeight(max((height(current.getNodeLeft())), height(current.getNodeRight())) + 1);
+		
+		int balance = getBalance(current);
+		
+		if(balance > 1 && key.compareTo(current.getNodeLeft().getKey())<0) {
+			return rotateRight(current);
 		}
-
-		else if (checkAVLBalance(current) == -1) {
-			Node<E, K> R = current.getNodeRight();
-			if ((depth(R.getNodeLeft()) - (depth(R.getNodeRight())) == 1)) {
-				current = rotateLeft(current);
-			} else if ((depth(R.getNodeLeft()) - depth(R.getNodeRight())) == 1) {
-				current.setRight(rotateRight(R));
-				current = rotateLeft(current);
-			}
-			return current;
-		} else if (checkAVLBalance(current) == 1) {
-			Node<E, K> L = current.getNodeLeft();
-
-			if ((depth(L.getNodeLeft()) - (depth(L.getNodeRight())) == 1)) {
-				current = rotateRight(current);
-			} else if ((depth(L.getNodeLeft()) - depth(L.getNodeRight())) == 1) {
-				current.setLeft(rotateLeft(L));
-				current = rotateRight(current);
-			}
-			return current;
+		if(balance < -1 && key.compareTo(current.getNodeRight().getKey())>0) { 
+			return rotateLeft(current); 
 		}
-
+        if (balance > 1 && key.compareTo(current.getNodeLeft().getKey())>0) { 
+            current.setLeft(rotateLeft(current.getNodeLeft())); 
+            return rotateRight(current); 
+        }  
+        if (balance < -1 && key.compareTo(current.getNodeRight().getKey())<0) { 
+            current.setRight(rotateRight(current.getNodeRight())); 
+            return rotateLeft(current); 
+        } 
 		return current;
 	}
 
@@ -73,36 +72,30 @@ public class BSTAvl<E, K extends Comparable<? super K>> extends BST<E, K> {
 		} else if (key.compareTo(node.getKey()) < 0) {
 			node.setLeft(delete(node.getNodeLeft(), key));
 			return node;
-		}
+		} else {
 		node.setRight(delete(node.getNodeRight(), key));
-
-		if (checkAVLBalance(node) == 0) {
-			return node;
 		}
-
-		else if (checkAVLBalance(node) == -1) {
-			Node<E, K> R = node.getNodeRight();
-			if ((depth(R.getNodeLeft()) - (depth(R.getNodeRight())) == 1)) {
-				node = rotateLeft(node);
-			} else if ((depth(R.getNodeLeft()) - depth(R.getNodeRight())) == 1) {
-				node.setRight(rotateRight(R));
-				node = rotateLeft(node);
-			}
-			return node;
-		} else if (checkAVLBalance(node) == 1) {
-			Node<E, K> L = node.getNodeLeft();
-
-			if ((depth(L.getNodeLeft()) - (depth(L.getNodeRight())) == 1)) {
-				node = rotateRight(node);
-			} else if ((depth(L.getNodeLeft()) - depth(L.getNodeRight())) == 1) {
-				node.setLeft(rotateLeft(L));
-				node = rotateRight(node);
-			}
-			return node;
+		
+		node.setHeight(max((height(node.getNodeLeft())), height(node.getNodeRight())) + 1);
+		
+		int balance = getBalance(node);
+		
+		if(balance > 1 && key.compareTo(node.getNodeLeft().getKey())<0) {
+			return rotateRight(node);
 		}
-
-		return node;
-
+		if(balance < -1 && key.compareTo(node.getNodeRight().getKey())>0) { 
+			return rotateLeft(node); 
+		}
+        if (balance > 1 && key.compareTo(node.getNodeLeft().getKey())>0) { 
+            node.setLeft(rotateLeft(node.getNodeLeft())); 
+            return rotateRight(node); 
+        }  
+        if (balance < -1 && key.compareTo(node.getNodeRight().getKey())<0) { 
+            node.setRight(rotateRight(node.getNodeRight())); 
+            return rotateLeft(node); 
+        } 	
+        
+        return node;
 	}
 
 	private Node<E, K> deleteNode(Node<E, K> node) {
@@ -136,59 +129,55 @@ public class BSTAvl<E, K extends Comparable<? super K>> extends BST<E, K> {
 		}
 
 	}
-
-	private Node<E, K> rotateLeft(Node<E, K> node) {
-
-		Node<E, K> pivot = node.getNodeRight();
-		Node<E, K> rootLeft = node.getNodeLeft();
-		Node<E, K> pivotLeft = pivot.getNodeLeft();
-		Node<E, K> pivotRight = pivot.getNodeRight();
-
-		node = new Node<E, K>(node.getElement(), node.getKey(), node.getBalance(), rootLeft, pivotLeft);
-
-		pivot = new Node<E, K>(pivot.getElement(), pivot.getKey(), pivot.getBalance(), node, pivotRight);
-
-		return pivot;
+	
+	private Node<E,K> rotateRight(Node<E,K> y) {
+		Node<E,K> x = y.getNodeLeft();
+		Node<E,K> T2 = x.getNodeRight();
+		
+		x.setRight(y);
+		y.setLeft(T2);
+		
+		y.setHeight(max((height(y.getNodeLeft())), height(y.getNodeRight())) + 1);
+		x.setHeight(max((height(x.getNodeLeft())), height(x.getNodeRight())) + 1);
+		
+		
+		return x;
 	}
-
-	private Node<E, K> rotateRight(Node<E, K> node) {
-
-		Node<E, K> pivot = node.getNodeRight();
-		Node<E, K> rootRigth = node.getNodeRight();
-		Node<E, K> pivotLeft = pivot.getNodeLeft();
-		Node<E, K> pivotRight = pivot.getNodeRight();
-
-		node = new Node<E, K>(node.getElement(), node.getKey(), node.getBalance(), rootRigth, pivotRight);
-
-		pivot = new Node<E, K>(pivot.getElement(), pivot.getKey(), pivot.getBalance(), node, pivotLeft);
-
-		return pivot;
+	
+	private Node<E,K> rotateLeft(Node<E,K> x) {
+		Node<E,K> y = x.getNodeRight();
+		Node<E,K> T2 = y.getNodeLeft();
+		
+		y.setLeft(x);
+		x.setRight(T2);
+		
+		
+		y.setHeight(max((height(y.getNodeLeft())), height(y.getNodeRight())) + 1);
+		x.setHeight(max((height(x.getNodeLeft())), height(x.getNodeRight())) + 1);
+		
+		
+		return y;
 	}
-
-	public int checkAVLBalance() {
-		return checkAVLBalance(root);
-	}
-
-	private int checkAVLBalance(Node<E, K> node) {
-		if (depth(node.getNodeLeft()) - depth(node.getNodeRight()) >= 2) {
-			return 1;
-		}
-
-		else if ((depth(node.getNodeRight()) - depth(node.getNodeLeft()) >= 2)) {
-			return -1;
-		} else {
+	
+	@Override
+	public int getBalance(Node<E,K> current) {
+		if(current==null) {
 			return 0;
 		}
+		
+		return height(current.getNodeLeft())-height(current.getNodeRight());
 	}
-
-	public int depth(Node<E, K> current) {
-		if (current == null)
+	
+	public int height(Node<E,K> current) {
+		if(current==null) {
 			return 0;
-		else {
-			return Math.max(depth(current.getNodeLeft()), depth(current.getNodeRight())) + 1;
-		}
+		} 
+		return current.getHeight();
 	}
-
+	
+	public int max(int a, int b) {
+		return (a>b)?a:b;
+	}
 	public ArrayList<E> toArrayList() {
 		toArraylist = new ArrayList<E>();
 		toArrayList(root);
@@ -204,4 +193,23 @@ public class BSTAvl<E, K extends Comparable<? super K>> extends BST<E, K> {
 		toArraylist.add(node.getElement());
 		toArrayList(node.getNodeRight());
 	}
+	
+	public static void main(String[] args) {
+
+			BSTAvl<String,Integer> hardcore;
+			hardcore = new BSTAvl<String, Integer>("Carlos",12);
+			hardcore.add("Test", 1);
+			hardcore.add("Test", 2);
+			hardcore.add("Test", 3);
+			hardcore.add("Test", 4);
+			hardcore.add("Test", 5);
+			hardcore.add("Test", 6);
+			
+			System.out.println(hardcore.getRoot().getElement());
+			hardcore.traverseInOrder();
+			hardcore.traversePostOrder();
+
+		
+	}
+
 }

@@ -4,7 +4,7 @@ public class Node<T, K extends Comparable<? super K>> {
 
 	private T element;
 	private K key;
-	private int balance;
+	private int height;
 	private Node<T, K> nodeLeft;
 	private Node<T, K> nodeRight;
 
@@ -13,14 +13,14 @@ public class Node<T, K extends Comparable<? super K>> {
 		this.key = key;
 		nodeLeft = null;
 		nodeRight = null;
-		balance = 0;
+		height=1;
 	}
 
-	public Node(T element, K key, int balance, Node<T, K> nodeLeft, Node<T, K> nodeRight) {
+	public Node(T element, K key, int height, Node<T, K> nodeLeft, Node<T, K> nodeRight) {
 		super();
 		this.element = element;
 		this.key = key;
-		this.balance = balance;
+		this.height = height;
 		this.nodeLeft = nodeLeft;
 		this.nodeRight = nodeRight;
 	}
@@ -56,13 +56,14 @@ public class Node<T, K extends Comparable<? super K>> {
 	public void setElement(T element) {
 		this.element = element;
 	}
-
-	public int getBalance() {
-		return balance;
+	
+	public int getHeight() {
+		return height;
+	}
+	
+	public void setHeight(int height) {
+		this.height = height;
 	}
 
-	public void setBalance(int balance) {
-		this.balance = balance;
-	}
 
 }

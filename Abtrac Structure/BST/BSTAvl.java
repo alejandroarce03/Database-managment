@@ -1,11 +1,8 @@
 package BST;
 
-import java.util.ArrayList;
-
 public class BSTAvl<E, K extends Comparable<? super K>> extends BST<E, K> implements iBSTAVL<E,K>  {
 
 	private Node<E, K> root;
-	private ArrayList<E> toArraylist;
 
 	public BSTAvl() {
 		root = null;
@@ -177,21 +174,6 @@ public class BSTAvl<E, K extends Comparable<? super K>> extends BST<E, K> implem
 	
 	public int max(int a, int b) {
 		return (a>b)?a:b;
-	}
-	public ArrayList<E> toArrayList() {
-		toArraylist = new ArrayList<E>();
-		toArrayList(root);
-
-		return toArraylist;
-	}
-
-	private void toArrayList(Node<E, K> node) {
-		if (node == null) {
-			return;
-		}
-		toArrayList(node.getNodeLeft());
-		toArraylist.add(node.getElement());
-		toArrayList(node.getNodeRight());
 	}
 	
 	public static void main(String[] args) {
